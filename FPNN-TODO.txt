@@ -4,3 +4,8 @@ UDPv2: close 数据包需要验证当前连接的指纹。否则当对端四元�
 UDP v2: map 阵列测试
 
 DBProxy: dataname.tablename 方式执行，比 先use db，然后执行 快很多
+
+异步 dns 查询：
+	http://www.choudan.net/2015/02/20/异步DNS解析.html
+	http://blog.csdn.net/lx_shudong/article/details/72638704?utm_source=itdadao&utm_medium=referral
+	http://www.th7.cn/Program/c/201512/721658.shtml
