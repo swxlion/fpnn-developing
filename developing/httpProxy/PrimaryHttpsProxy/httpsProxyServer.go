@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"./proxyServer"
+	proxyServer "local/proxyServer"
 )
 
 func main() {
