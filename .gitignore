@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Desible for MacOS
+/**/.DS_Store
+/**/*.dSYM
