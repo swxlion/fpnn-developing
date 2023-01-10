@@ -59,9 +59,9 @@ int FunCarpSequence::which(const int64_t key)
 {
     char buf[32] = {0};
 #ifdef __APPLE__
-    sprintf(buf,"%lld", key);
+    snprintf(buf, 32, "%lld", key);
 #else
-    sprintf(buf,"%ld", key);
+    sprintf(buf, "%ld", key);
 #endif
 
     return which(buf);
@@ -89,9 +89,9 @@ size_t FunCarpSequence::sequence(const int64_t key, size_t num, std::vector<size
 {
     char buf[32] = {0};
 #ifdef __APPLE__
-    sprintf(buf,"%lld", key);
+    snprintf(buf, 32, "%lld", key);
 #else
-    sprintf(buf,"%ld", key);
+    sprintf(buf, "%ld", key);
 #endif
     return sequence(buf, num, seq_vec);
 }

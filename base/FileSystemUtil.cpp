@@ -882,7 +882,7 @@ bool FileLocker::canRelock(int fd)
 		
 	int pid = (int)finfo.l_pid;
 	char buf[32];
-	sprintf(buf, "/proc/%d", pid);
+	snprintf(buf, 32, "/proc/%d", pid);
 	
 	struct stat dir_stat;
 	if (stat(buf, &dir_stat) == -1)
