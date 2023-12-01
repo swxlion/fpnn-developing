@@ -1,0 +1,32 @@
+执行清单：
+
+[Done] 设计多密钥配置文件
+[Done] 修改配置文件模板
+
+[Done] 1. 修改 server 加入多密钥管理
+[Done] 2. 修改 protocol，支持多密钥指定
+[Done] 修改 ioWorker，支持多密钥指定
+
+[Done] 	修改 TCP client
+[Done] 	修改 UDP client
+
+
+[Done] 	修改 tune 接口，支持多密钥刷新
+
+
+修改文档：
+[Done] 	安全体系
+[Done] 	内置接口
+[Done] 	tune 参数
+[Done] 	change list
+
+
+注意：
+* UDP 需要考虑 UDP 协议 扩展 v2，还是新开 v3
+* UDP 需要考虑 Data 加密使用不同的 keyId
+* UDP 需要考虑 ECDH 打入 combine 数据中的情况
+
+
+1.4.1 (计划):
+*. client with server
+*. sha3

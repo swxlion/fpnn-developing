@@ -113,7 +113,7 @@ namespace fpnn
 		}
 
 		inline bool isEncrypted() { return _ioBuffer.isEncrypted(); }
-		inline void setKeyExchanger(ECCKeyExchange* exchanger) { _ioBuffer.setKeyExchanger(exchanger); }
+		inline void setKeysManager(ServerECCKeyManagerPtr keysManager) { _ioBuffer.setKeysManager(keysManager); }
 
 		virtual bool waitForAllEvents();
 		virtual enum ConnectionType connectionType() { return BasicConnection::UDPServerConnectionType; }

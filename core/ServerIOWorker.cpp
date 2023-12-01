@@ -282,6 +282,7 @@ bool TCPServerIOWorker::processECDH(TCPServerConnection * connection, FPQuestPtr
 	{
 		FPQReader qr(quest);
 		std::string publicKey = qr.wantString("publicKey");
+		std::string keyId = qr.getString("keyId");
 		bool streamMode = qr.getBool("streamMode", false);
 		int bits = qr.getInt("bits", 128);
 
@@ -294,7 +295,7 @@ bool TCPServerIOWorker::processECDH(TCPServerConnection * connection, FPQuestPtr
 		int keyLen = bits/8;
 		uint8_t key[32];
 		uint8_t iv[16];
-		if (_server->calcEncryptorKey(key, iv, keyLen, publicKey) == false)
+		if (_server->calcEncryptorKey(key, iv, keyLen, publicKey, keyId) == false)
 		{
 			LOG_ERROR("calcKey failed. Peer %s", connection->_connectionInfo->str().c_str());
 			return false;

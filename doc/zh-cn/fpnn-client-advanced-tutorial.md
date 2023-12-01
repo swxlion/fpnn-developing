@@ -101,37 +101,61 @@ FPNN 中，链接保活可分别通过 [TCPClient][] 或 [UDPClient][] 的 `keep
 
 ## 加密链接
 
-目前仅 TCP 支持加密链接，UDP 需要等待后续版本支持。
+[TCPClient][] 支持两种加密方式：SSL/TLS 加密和 FPNN 加密，[UDPClient][] 仅支持 FPNN 加密。但 UDPClient 可对可靠数据包内的数据进行二次强化加密。
 
-[TCPClient][] 支持两种加密方式：SSL/TLS 加密和 FPNN 加密。
+* TCPClient 加密功能相关接口
 
-SSL/TLS 加密的接口为：
+	+ SSL/TLS 加密的接口：
 
-	bool enableSSL(bool enable = true);
+			bool enableSSL(bool enable = true);
 
-FPNN 加密分为包加密和流加密两种模式。相关接口为：
+	+ FPNN 加密分为包加密和流加密两种模式。相关接口为：
 
-	void enableEncryptor(const std::string& curve, const std::string& peerPublicKey, bool packageMode = true, bool reinforce = false);
-	bool enableEncryptorByDerData(const std::string &derData, bool packageMode = true, bool reinforce = false);
-	bool enableEncryptorByPemData(const std::string &PemData, bool packageMode = true, bool reinforce = false);
-	bool enableEncryptorByDerFile(const char *derFilePath, bool packageMode = true, bool reinforce = false);
-	bool enableEncryptorByPemFile(const char *pemFilePath, bool packageMode = true, bool reinforce = false);
+			void enableEncryptor(const std::string& curve, const std::string& peerPublicKey, bool packageMode = true, bool reinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByDerData(const std::string &derData, bool packageMode = true, bool reinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByPemData(const std::string &PemData, bool packageMode = true, bool reinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByDerFile(const char *derFilePath, bool packageMode = true, bool reinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByPemFile(const char *pemFilePath, bool packageMode = true, bool reinforce = false, const std::string& keyId = std::string());
 
-具体参数为：
+		具体参数为：
 
-+ curve 为服务器采用的椭圆曲线名称，有四个选项：
+		+ curve 为服务器采用的椭圆曲线名称，有四个选项：
 
-	secp192r1、secp224r1、secp256r1、secp256k1。
+			secp192r1、secp224r1、secp256r1、secp256k1。
 
-+ peerPublicKey 为服务器的公钥。该参数要求传入二进制数据，非 base64 或者 hex 之后的可视数据。
-+ packageMode 为加密模式。true 表示采用包加密模式，false 表示采用流加密模式。
-+ reinforce 为加密强度。true 表示采用 256 bits 秘钥，false 表示采用 128 位秘钥。
+		+ peerPublicKey 为服务器的公钥。该参数要求传入二进制数据，非 base64 或者 hex 之后的可视数据。
+		+ packageMode 为加密模式。true 表示采用包加密模式，false 表示采用流加密模式。
+		+ reinforce 为加密强度。true 表示采用 256 bits 秘钥，false 表示采用 128 位秘钥。
+		+ keyId 为指定的密钥id。用于告诉服务端使用指定 id 对应的密钥。默认为空，表示使用默认密钥。
 
-**注意**：在同一连接上，SSL/TLS 与 FPNN 自身的加密不可同时开启。为了防止无谓的消耗系统资源，FPNN 不支持冗余的加密。
+	**注意**：在同一连接上，SSL/TLS 与 FPNN 自身的加密不可同时开启。为了防止无谓的消耗系统资源，FPNN 不支持冗余的加密。
 
-注：[TCPClient][] 的配置类接口非线程安全，需要在数据收发前配置完成。
+	**注意**：[TCPClient][] 的配置类接口非线程安全，需要在数据收发前配置完成。
 
 
+* UDPClient 加密功能相关接口
+
+	+ FPNN 加密相关接口为：
+
+			void enableEncryptor(const std::string& curve, const std::string& peerPublicKey, bool packageReinforce = false, bool dataEnhance = false, bool dataReinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByDerData(const std::string &derData, bool packageReinforce = false, bool dataEnhance = false, bool dataReinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByPemData(const std::string &PemData, bool packageReinforce = false, bool dataEnhance = false, bool dataReinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByDerFile(const char *derFilePath, bool packageReinforce = false, bool dataEnhance = false, bool dataReinforce = false, const std::string& keyId = std::string());
+			bool enableEncryptorByPemFile(const char *pemFilePath, bool packageReinforce = false, bool dataEnhance = false, bool dataReinforce = false, const std::string& keyId = std::string());
+
+		具体参数为：
+
+		+ curve 为服务器采用的椭圆曲线名称，有四个选项：
+
+			secp192r1、secp224r1、secp256r1、secp256k1。
+
+		+ peerPublicKey 为服务器的公钥。该参数要求传入二进制数据，非 base64 或者 hex 之后的可视数据。
+		+ packageReinforce 为加密强度。true 表示采用 256 bits 秘钥，false 表示采用 128 位秘钥。
+		+ dataEnhance 为是否为可靠数据报内的数据进行强化加密。
+		+ dataReinforce 为可靠数据报内的数据强化加密的加密强度。true 表示采用 256 bits 秘钥，false 表示采用 128 位秘钥。
+		+ keyId 为指定的密钥id。用于告诉服务端使用指定 id 对应的密钥。默认为空，表示使用默认密钥。**注意**：该参数为向前保留参数。当前版本(UDP.v2)仅支持默认密钥，指定密钥需升级到 UDP.v3 才能使用。
+
+	**注意**：[UDPClient][] 的配置类接口非线程安全，需要在数据收发前配置完成。
 
 
 ## Server Push

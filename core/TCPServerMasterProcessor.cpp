@@ -51,14 +51,20 @@ FPAnswerPtr TCPServerMasterProcessor::tune(const FPReaderPtr args, const FPQuest
 		if (ServerController::tune(key, value))
 			return FPAWriter(1, quest)("return", true);
 
-		if(key == "server.security.ip.whiteList.enable"){
+		if (key == "server.security.ip.whiteList.enable"){
 			_server->enableIPWhiteList(strcasecmp("true", value.c_str()) == 0);
 		}
-		else if(key == "server.security.ip.whiteList.addIP"){
+		else if (key == "server.security.ip.whiteList.addIP"){
 			_server->addIPToWhiteList(value);
 		}
-		else if(key == "server.security.ip.whiteList.removeIP"){
+		else if (key == "server.security.ip.whiteList.removeIP"){
 			_server->removeIPFromWhiteList(value);
+		}
+		else if (key == "server.security.ecdh.keysList.reload")
+		{
+			//-- TODO: 会占用作业线程。但该接口调用频率极低。考虑优化。
+			bool res = _server->reloadEncryptionKeysList();
+			return FPAWriter(1, quest)("return", res);
 		}
 		else{
 			_questProcessor->tune(key, value);

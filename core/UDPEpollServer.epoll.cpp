@@ -76,12 +76,13 @@ bool UDPEpollServer::initServerVaribles()
 		"FPNN.server.work.queue.max.size"}, FPNN_DEFAULT_UDP_WORK_POOL_QUEUE_SIZE);
 
 	//-- ECC-AES encryption
-	_encryptEnabled = Setting::getBool(std::vector<std::string>{
+	bool encryptEnabled = Setting::getBool(std::vector<std::string>{
 		"FPNN.server.udp.security.ecdh.enable",
 		"FPNN.server.security.ecdh.enable"}, false);
-	if (_encryptEnabled)
+	if (encryptEnabled)
 	{
-		if (_keyExchanger.init("udp") == false)
+		_keysManager = ServerECCKeyManager::init("udp");
+		if (_keysManager == nullptr)
 		{
 			throw FPNN_ERROR_CODE_FMT(FpnnCoreError, FPNN_EC_CORE_UNKNOWN_ERROR, "Auto config ECC-AES for UDP server failed.");
 		}
@@ -538,8 +539,8 @@ void UDPEpollServer::newConnection(int newSocket, bool isIPv4)
 	UDPServerConnection* connection = new UDPServerConnection(connInfo, mtu);
 	connection->epollfd = _epoll_fd;
 
-	if (_encryptEnabled)
-		connection->setKeyExchanger(&_keyExchanger);
+	if (_keysManager)
+		connection->setKeysManager(_keysManager);
 
 	_connectionCache.insert(_receiver, connection);
 	connection->appendRawData(_receiver.udpRawData);

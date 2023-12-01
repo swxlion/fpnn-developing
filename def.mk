@@ -12,11 +12,12 @@ DEFAULTPLATFORM=-DHOST_PLATFORM_AWS
 
 # MACOS_SSL_INCLUDE_PATH=/usr/local/opt/openssl@1.1/include
 # MACOS_SSL_LIB_PATH=/usr/local/opt/openssl@1.1/lib
-MACOS_SSL_INCLUDE_PATH=/opt/homebrew/opt/openssl@1.1/include
-MACOS_SSL_LIB_PATH=/opt/homebrew/opt/openssl@1.1/lib
-# will modify for openssl v3.x.x
-# MACOS_SSL_INCLUDE_PATH=/opt/homebrew/opt/openssl@3/include
-# MACOS_SSL_LIB_PATH=/opt/homebrew/opt/openssl@3/lib
+
+#MACOS_SSL_INCLUDE_PATH=/opt/homebrew/opt/openssl@1.1/include
+#MACOS_SSL_LIB_PATH=/opt/homebrew/opt/openssl@1.1/lib
+
+MACOS_SSL_INCLUDE_PATH=/opt/homebrew/opt/openssl@3/include
+MACOS_SSL_LIB_PATH=/opt/homebrew/opt/openssl@3/lib
 
 CUDA_INCLUDE_PATH=/usr/local/cuda/include
 

@@ -1,50 +1,11 @@
 #include "FPLog.h"
 #include "md5.h"
 #include "sha256.h"
-#include "Setting.h"
-#include "FileSystemUtil.h"
+//#include "Setting.h"
+//#include "FileSystemUtil.h"
 #include "KeyExchange.h"
 
 using namespace fpnn;
-
-bool ECCKeyExchange::init()
-{
-	std::string curve = Setting::getString("FPNN.server.security.ecdh.curve");
-	std::string file = Setting::getString("FPNN.server.security.ecdh.privateKey");
-	
-	if (curve.empty() || file.empty())
-		return false;
-
-	std::string privateKey;
-	if (FileSystemUtil::readFileContent(file, privateKey) == false)
-	{
-		LOG_ERROR("Read private key file %s failed.", file.c_str());
-		return false;
-	}
-
-	return init(curve, privateKey);
-}
-
-bool ECCKeyExchange::init(const char* proto)
-{
-	std::vector<std::string> priorCurveKeys{ std::string("FPNN.server.").append(proto).append(".security.ecdh.curve"), "FPNN.server.security.ecdh.curve"};
-	std::vector<std::string> priorFileKeys{ std::string("FPNN.server.").append(proto).append(".security.ecdh.privateKey"), "FPNN.server.security.ecdh.privateKey"};
-
-	std::string curve = Setting::getString(priorCurveKeys);
-	std::string file = Setting::getString(priorFileKeys);
-	
-	if (curve.empty() || file.empty())
-		return false;
-
-	std::string privateKey;
-	if (FileSystemUtil::readFileContent(file, privateKey) == false)
-	{
-		LOG_ERROR("Read private key file %s failed.", file.c_str());
-		return false;
-	}
-
-	return init(curve, privateKey);
-}
 
 bool ECCKeyExchange::init(const std::string& curve, const std::string& privateKey)
 {
@@ -70,7 +31,7 @@ bool ECCKeyExchange::init(const std::string& curve, const std::string& privateKe
 	}
 	else
 	{
-		LOG_ERROR("Unsupported ECC curve.");
+		LOG_ERROR("Unsupported ECC curve %s.", curve.c_str());
 		return false;
 	}
 

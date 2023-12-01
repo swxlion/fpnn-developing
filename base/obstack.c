@@ -146,7 +146,6 @@ struct obstack *_obstack;
   } while (0)
 # endif
 
-
 /* Initialize an obstack H for use.  Specify chunk size SIZE (0 means default).
    Objects start on multiples of ALIGNMENT (0 means use default).
    CHUNKFUN is the function to use to allocate chunks,
@@ -154,18 +153,10 @@ struct obstack *_obstack;
 
    Return nonzero if successful, calls obstack_alloc_failed_handler if
    allocation fails.  */
-
-int
-_obstack_begin (h, size, alignment, chunkfun, freefun)
-     struct obstack *h;
-     int size;
-     int alignment;
 # if defined __STDC__ && __STDC__
-     POINTER (*chunkfun) (long);
-     void (*freefun) (void *);
+int _obstack_begin (struct obstack *h, int size, int alignment, POINTER (*chunkfun) (long), void (*freefun) (void *))
 # else
-     POINTER (*chunkfun) ();
-     void (*freefun) ();
+int _obstack_begin (struct obstack *h, int size, int alignment, POINTER (*chunkfun) (), void (*freefun) ())
 # endif
 {
   register struct _obstack_chunk *chunk; /* points to new chunk */
@@ -213,19 +204,12 @@ _obstack_begin (h, size, alignment, chunkfun, freefun)
   return 1;
 }
 
-int
-_obstack_begin_1 (h, size, alignment, chunkfun, freefun, arg)
-     struct obstack *h;
-     int size;
-     int alignment;
 # if defined __STDC__ && __STDC__
-     POINTER (*chunkfun) (POINTER, long);
-     void (*freefun) (POINTER, POINTER);
+int _obstack_begin_1 (struct obstack *h, int size, int alignment, POINTER (*chunkfun) (POINTER, long), void (*freefun) (POINTER, POINTER), POINTER arg)
 # else
-     POINTER (*chunkfun) ();
-     void (*freefun) ();
+int _obstack_begin_1 (struct obstack *h, int size, int alignment, POINTER (*chunkfun) (), void (*freefun) (), POINTER arg)
 # endif
-     POINTER arg;
+
 {
   register struct _obstack_chunk *chunk; /* points to new chunk */
 
@@ -279,10 +263,7 @@ _obstack_begin_1 (h, size, alignment, chunkfun, freefun, arg)
    Copies any partial object from the end of the old chunk
    to the beginning of the new one.  */
 
-void
-_obstack_newchunk (h, length)
-     struct obstack *h;
-     int length;
+void _obstack_newchunk (struct obstack *h, int length)
 {
   register struct _obstack_chunk *old_chunk = h->chunk;
   register struct _obstack_chunk *new_chunk;
@@ -358,10 +339,7 @@ libc_hidden_def (_obstack_newchunk)
 int _obstack_allocated_p (struct obstack *h, POINTER obj);
 # endif
 
-int
-_obstack_allocated_p (h, obj)
-     struct obstack *h;
-     POINTER obj;
+int _obstack_allocated_p (struct obstack *h, POINTER obj)
 {
   register struct _obstack_chunk *lp;	/* below addr of any objects in this chunk */
   register struct _obstack_chunk *plp;	/* point to previous chunk if any */
@@ -386,10 +364,7 @@ _obstack_allocated_p (h, obj)
 /* This function has two names with identical definitions.
    This is the first one, called from non-ANSI code.  */
 
-void
-_obstack_free (h, obj)
-     struct obstack *h;
-     POINTER obj;
+void _obstack_free (struct obstack *h, POINTER obj)
 {
   register struct _obstack_chunk *lp;	/* below addr of any objects in this chunk */
   register struct _obstack_chunk *plp;	/* point to previous chunk if any */
@@ -424,10 +399,7 @@ _obstack_free (h, obj)
 strong_alias (_obstack_free, obstack_free)
 #else
 
-void
-obstack_free (h, obj)
-     struct obstack *h;
-     POINTER obj;
+void obstack_free (struct obstack *h, POINTER obj)
 {
   register struct _obstack_chunk *lp;	/* below addr of any objects in this chunk */
   register struct _obstack_chunk *plp;	/* point to previous chunk if any */
@@ -456,10 +428,8 @@ obstack_free (h, obj)
     abort ();
 }
 #endif
-
-int
-_obstack_memory_used (h)
-     struct obstack *h;
+
+int _obstack_memory_used (struct obstack *h)
 {
   register struct _obstack_chunk* lp;
   register int nbytes = 0;

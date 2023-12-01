@@ -51,7 +51,7 @@ TCP 与 UDP 服务均内置该接口。
 
 ### key
 
-	=> *key { publicKey:%B, ?streamMode:%b, ?bits:%d }
+	=> *key { publicKey:%B, ?keyId:%s, ?streamMode:%b, ?bits:%d }
 	<= {}  //-- answer is encrypted.
 
 ECC/ECDH 方式交换秘钥。  
@@ -64,6 +64,10 @@ ECC/ECDH 方式交换秘钥。
 + **publicKey**
 
 	客户端公钥。
+
++ **keyId**
+
+	客户端公钥id。
 
 + **streamMode**
 

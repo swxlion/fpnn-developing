@@ -33,12 +33,15 @@ namespace fpnn
 		ECCKeyExchange(): _secertLen(0), _curve(NULL) {}
 
 		/*
-			init() auto load config items:
+			init(proto) auto load config items:
+				FPNN.server.<proto>.security.ecdh.curve = 
+				FPNN.server.<proto>.security.ecdh.privateKey = 
+			or
 				FPNN.server.security.ecdh.curve = 
 				FPNN.server.security.ecdh.privateKey = 
+			when the first group isn't exist.
 		*/
-		bool init();
-		bool init(const char* proto);
+	
 		bool init(const std::string& curve, const std::string& privateKey);
 		/*
 			key: OUT. Key buffer length is equal to keylen.

@@ -1,3 +1,49 @@
+### v.1.4.0
+
+#### 增加
+
+* 动态多密钥配置
+
+	+ 动态多密钥配置项
+
+		FPNN.server.security.ecdh.keysListFile
+		FPNN.server.tcp.security.ecdh.keysListFile
+		FPNN.server.udp.security.ecdh.keysListFile
+
+	+ 服务端 ECC 密钥管理模块
+	+ TCP 与 UDP 服务器增加 addEncryptionKey(const std::string&, const std::string&, const std::string&) 接口；
+	+ TCP 与 UDP 服务器增加 reloadEncryptionKeysList() 接口；
+	+ TCP 与 UDP 服务器 tune 接口增加新条目： server.security.ecdh.keysList.reload。
+
+更新/重新加载加密密钥。
+
+
+#### 变更
+
+* 将部分现代C/C++编译器不再支持的C语言上古语法改为现代语法；
+* TCPClient 加密相关接口增加默认参数 const std::string& keyId = std::string()；
+* UDPClient 加密相关接口增加默认参数 const std::string& keyId = std::string()。**注意：** UDPClient 新增参数为预留参数。在 UDP 更新至 v3 之前，除默认值外，暂不可用；
+* 兼容 OpenSSL 1.1/3.0/3.1。
+
+
+
+#### 移除
+
+* 不再使用的配置项 FP.server.host.platform
+* TCP 与 UDP 服务器对象的 enableEncryptor(const std::string&, const std::string&) 接口。请使用 addEncryptionKey 接口代替。
+
+
+-----------
+
+### v.1.3.1
+
+#### 修复
+
+* 满尺寸的UDP包，因为重发默认是组装包格式，所以因剩余空间小2个字节，导致无法重发的问题。
+
+
+-----------
+
 ### v.1.3.0
 
 #### 增加

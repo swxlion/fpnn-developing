@@ -20,7 +20,7 @@
 #include "ConnectionReclaimer.h"
 #include "UDPServerMasterProcessor.h"
 #include "ConcurrentSenderInterface.h"
-#include "KeyExchange.h"
+#include "ServerECCKeyManager.h"
 
 namespace fpnn
 {
@@ -88,8 +88,7 @@ namespace fpnn
 		std::shared_ptr<ParamTemplateThreadPoolArray<UDPRequestPackage *>> _workerPool;
 		std::shared_ptr<TaskThreadPoolArray> _answerCallbackPool;
 
-		bool _encryptEnabled;
-		ECCKeyExchange _keyExchanger;
+		ServerECCKeyManagerPtr _keysManager;
 		std::atomic<bool> _enableIPWhiteList;
 		IPWhiteList _ipWhiteList;
 		ConnectionReclaimerPtr _reclaimer;
@@ -144,7 +143,7 @@ namespace fpnn
 #endif
 			_maxWorkerPoolQueueLength(FPNN_DEFAULT_UDP_WORK_POOL_QUEUE_SIZE),
 			_timeoutQuest(FPNN_DEFAULT_QUEST_TIMEOUT * 1000),
-			_serverMasterProcessor(new UDPServerMasterProcessor()), _encryptEnabled(false), _enableIPWhiteList(false)
+			_serverMasterProcessor(new UDPServerMasterProcessor()), _enableIPWhiteList(false)
 		{
 			_closeNotifyFds[0] = 0;
 			_closeNotifyFds[1] = 0;
@@ -298,12 +297,25 @@ namespace fpnn
 		}
 
 		static void enableForceEncryption();
-		inline bool encrpytionEnabled() { return _encryptEnabled; }
-		inline bool enableEncryptor(const std::string& curve, const std::string& privateKey)
+		inline bool encrpytionEnabled() { return _keysManager != nullptr; }
+		inline bool addEncryptionKey(const std::string& curve, const std::string& privateKey, const std::string& keyId)
 		{
-			_encryptEnabled = _keyExchanger.init(curve, privateKey);
-			return _encryptEnabled;
+			if (_keysManager)
+			{
+				return _keysManager->addKeyExchange(curve, privateKey, keyId);
+			}
+			else
+			{
+				ServerECCKeyManagerPtr manager(new ServerECCKeyManager);
+				if (manager->addKeyExchange(curve, privateKey, keyId))
+				{
+					_keysManager = manager;
+					return true;
+				}
+				return false;
+			}
 		}
+		inline bool reloadEncryptionKeysList() { return _keysManager->reload("udp"); }
 
 		inline bool ipWhiteListEnabled() { return _enableIPWhiteList; }
 		inline void enableIPWhiteList(bool enable = true)

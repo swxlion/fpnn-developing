@@ -124,14 +124,14 @@ void ARQPeerSeqManager::cleanReceivedSeqs()
 //=====================================================================//
 //--                           UDP Encryptor                         --//
 //=====================================================================//
-UDPEncryptor::EncryptorPair UDPEncryptor::createPair(ECCKeyExchange* keyExchanger, const std::string& publicKey, bool reinforce)
+UDPEncryptor::EncryptorPair UDPEncryptor::createPair(ServerECCKeyManagerPtr keysManager, const std::string& keyId, const std::string& publicKey, bool reinforce)
 {
 	struct EncryptorPair pair;
 
 	uint8_t key[32];
 	uint8_t iv[16];
 	int aesKeyLen = reinforce ? 32 : 16;
-	if (keyExchanger->calcKey(key, iv, aesKeyLen, publicKey))
+	if (keysManager->calcKey(key, iv, aesKeyLen, publicKey, keyId))
 	{
 		pair.sender = new UDPEncryptor();
 		pair.sender->configPackageEncryptor(key, aesKeyLen, iv);
@@ -143,7 +143,8 @@ UDPEncryptor::EncryptorPair UDPEncryptor::createPair(ECCKeyExchange* keyExchange
 	return pair;
 }
 
-UDPEncryptor::EncryptorPair UDPEncryptor::createPair(ECCKeyExchange* keyExchanger, const std::string& packagePublicKey,
+//-- TODO: keyId need update for UDP.v3.
+UDPEncryptor::EncryptorPair UDPEncryptor::createPair(ServerECCKeyManagerPtr keysManager, const std::string& packagePublicKey,
 	bool reinforcePackage, const std::string& dataPublicKey, bool reinforceData)
 {
 	struct EncryptorPair pair;
@@ -151,13 +152,13 @@ UDPEncryptor::EncryptorPair UDPEncryptor::createPair(ECCKeyExchange* keyExchange
 	uint8_t packageKey[32];
 	uint8_t packageIV[16];
 	int packageKeyLen = reinforcePackage ? 32 : 16;
-	if (keyExchanger->calcKey(packageKey, packageIV, packageKeyLen, packagePublicKey) == false)
+	if (keysManager->calcKey(packageKey, packageIV, packageKeyLen, packagePublicKey, "") == false)
 		return pair;
 
 	uint8_t dataKey[32];
 	uint8_t dataIV[16];
 	int dataKeyLen = reinforceData ? 32 : 16;
-	if (keyExchanger->calcKey(dataKey, dataIV, dataKeyLen, dataPublicKey) == false)
+	if (keysManager->calcKey(dataKey, dataIV, dataKeyLen, dataPublicKey, "") == false)
 		return pair;
 
 	pair.sender = new UDPEncryptor();

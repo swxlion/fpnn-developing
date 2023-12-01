@@ -730,19 +730,74 @@ FPNN 采用 ECC(椭圆曲线算法)进行秘钥协商，AES 算法的 CFB 模式
 
 	请在配置文件中增加以下条目：
 
+		# TCP & UDP 使用相同配置
 		FPNN.server.security.ecdh.enable = true
-		 
-		# curve 取值: secp256k1, secp256r1, secp224r1, secp192r1
+		FPNN.server.security.ecdh.keysListFile = <密钥列表清单文件路径>
+
+		# TCP 配置
+		FPNN.server.tcp.security.ecdh.enable = true
+		FPNN.server.tcp.security.ecdh.keysListFile = <密钥列表清单文件路径>
+
+		# UDP 配置
+		FPNN.server.udp.security.ecdh.enable = true
+		FPNN.server.dup.security.ecdh.keysListFile = <密钥列表清单文件路径>
+
+	密钥列表清单文件格式为 JSON 格式，模版如下：
+
+		{
+			"<key-id>": {
+				"curve": "<curve-type>",
+				"privateKey": "<private-key-file-path>",
+				"enable": true
+			},
+			... ...
+		}
+
+	说明：
+
+	+ 其中 curve 和 privateKeyPath 是必选项，其余是可选项。
+	+ curve 为曲线类型。取值：secp256k1, secp256r1, secp224r1, secp192r1。
+	+ privateKey 为对应私钥的文件路径。相对路径以 配置清单文件 所在目录为当前目录。
+	+ privateKey 为二进制格式，非十六进制格式。
+	+ 如果 key-id 为空字符串，则作为默认密钥。
+	+ 如果 key-id 为空字符串的默认密钥不存在，则会尝试读取 FPNN.server.security.ecdh.privateKey 和对应的 curve，作为默认密钥。
+
+
+	**如果仅配置默认密钥**可参考如下**旧版本兼容配置项**：
+
+		# TCP & UDP 使用相同配置
+		FPNN.server.security.ecdh.enable = true
 		FPNN.server.security.ecdh.curve = <curve name>
-		 
-		# privateKey 指向 privateKey (binary format, not Hex) 的文件路径
 		FPNN.server.security.ecdh.privateKey = <private key file path>
+
+		# TCP 配置
+		FPNN.server.tcp.security.ecdh.enable = true
+		FPNN.server.tcp.security.ecdh.curve = <curve name>
+		FPNN.server.tcp.security.ecdh.privateKey = <private key file path>
+
+		# UDP 配置
+		FPNN.server.udp.security.ecdh.enable = true
+		FPNN.server.udp.security.ecdh.curve = <curve name>
+		FPNN.server.udp.security.ecdh.privateKey = <private key file path>
+
+	说明：
+
+	+ curve 为曲线类型。取值：secp256k1, secp256r1, secp224r1, secp192r1。
+	+ privateKey 为对应私钥的文件路径。相对路径以 配置清单文件 所在目录为当前目录。
+	+ privateKey 为二进制格式，非十六进制格式。
 
 	以上配置条目加入后，加密已经启用，但处于**非强制加密**状态。加密链接和非加密链接都可以访问任何没有指定**加密属性**的接口。
 
 	如果要所有接口都必须通过加密链接访问，则增加以下配置项：
 
+		# TCP & UDP
 		FPNN.server.security.forceEncrypt.userMethods = true
+
+		# 仅 TCP
+		FPNN.server.tcp.security.forceEncrypt.userMethods = true
+
+		# 仅 UDP
+		FPNN.server.udp.security.forceEncrypt.userMethods = true
 
 	**注意**
 
@@ -753,21 +808,27 @@ FPNN 采用 ECC(椭圆曲线算法)进行秘钥协商，AES 算法的 CFB 模式
 
 * 使用接口启用加密功能
 
-	目前仅 [TCPEpollServer](APIs/core/TCPEpollServer.md) 对象支持加密功能，[UDPEpollServer](APIs/core/UDPEpollServer.md) 暂不支持。
-
-	[TCPEpollServer](APIs/core/TCPEpollServer.md) 加密相关接口：
+	[TCPEpollServer](APIs/core/TCPEpollServer.md) & [UDPEpollServer](APIs/core/UDPEpollServer.md) 加密相关接口：
 
 	+ 判断加密状态
 
 			inline bool encrpytionEnabled();
 
-		请参见 [encrpytionEnabled](APIs/core/TCPEpollServer.md#encrpytionEnabled)。
+		TCP Server 请参见 [encrpytionEnabled](APIs/core/TCPEpollServer.md#encrpytionEnabled)。
+		UDP Server 请参见 [encrpytionEnabled](APIs/core/UDPEpollServer.md#encrpytionEnabled)。
 
 	+ 配置加密密钥
 
-			inline bool enableEncryptor(const std::string& curve, const std::string& privateKey);
+			inline bool addEncryptionKey(const std::string& curve, const std::string& privateKey, const std::string& keyId);
 
-		请参见 [enableEncryptor](APIs/core/TCPEpollServer.md#enableEncryptor)。
+		TCP Server 请参见 [enableEncryptor](APIs/core/TCPEpollServer.md#addEncryptionKey)。
+		UDP Server 请参见 [enableEncryptor](APIs/core/UDPEpollServer.md#addEncryptionKey)。
+
+		**注意**
+
+		+ keyId 为空，即为默认密钥。等同于之前 enableEncryptor 接口配置的密钥。
+		+ 1.4.0 以前版本的 enableEncryptor 接口已取消，请用 addEncryptionKey 接口代替，并用 encrpytionEnabled 接口判断是否启动加密成功。
+		+ UDP Server 目前只支持默认密钥。需要等到 UDP.v3 版，才能支持指定密钥。
 
 	+ 启用强制加密
 

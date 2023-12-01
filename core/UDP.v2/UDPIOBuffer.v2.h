@@ -164,7 +164,7 @@ namespace fpnn
 		~UDPIOBuffer();
 
 		void initMutex(std::mutex* mutex) { _mutex = mutex; }
-		void setKeyExchanger(ECCKeyExchange* exchanger) { _parseResult.keyExchanger = exchanger; }
+		void setKeysManager(ServerECCKeyManagerPtr keysManager) { _parseResult.keysManager = keysManager; }
 		
 		bool enableEncryptorAsInitiator(const std::string& curve, const std::string& peerPublicKey, bool reinforce);
 		bool enableEncryptorAsInitiator(const std::string& curve, const std::string& peerPublicKey,

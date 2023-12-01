@@ -71,6 +71,35 @@ FPNN.server.tcp.security.ecdh.enable = false
 FPNN.server.udp.security.ecdh.enable = false
 
 
+# 动态多密钥配置清单。
+# 动态多密钥配置清单文件格式介绍：
+#
+#    JSON 格式，参见：
+#    {
+#        <keyId>: {
+#            "curve": "xxx",
+#            "privateKey": "xxx",
+#            "enable": true
+#        },
+#        ... ...
+#    }
+#
+#    其中 curve 和 privateKeyPath 是必选项，其余是可选项。
+#    curve 为曲线类型。取值：secp256k1, secp256r1, secp224r1, secp192r1
+#    privateKey 为对应私钥的文件路径。相对路径以 配置清单文件 所在目录为当前目录。
+#
+#    如果 id 为空字符串，则作为默认密钥。
+#    如果 id 为空字符串的默认密钥不存在，则会尝试读取 FPNN.server.security.ecdh.privateKey 和对应的 curve，作为默认密钥。
+#
+FPNN.server.security.ecdh.keysListFile = 
+
+# TCP 服务配置项。当该项无配置时，才会读取 FPNN.server.security.ecdh.keysListFile 的配置
+FPNN.server.tcp.security.ecdh.keysListFile =
+
+# UDP 服务配置项。当该项无配置时，才会读取 FPNN.server.security.ecdh.keysListFile 的配置
+FPNN.server.udp.security.ecdh.keysListFile =
+
+
 # curve 取值: secp256k1, secp256r1, secp224r1, secp192r1
 # TCP & UDP 服务通用配置
 FPNN.server.security.ecdh.curve = 
@@ -171,9 +200,6 @@ FP.server.local.ip4 =
 FP.server.public.ip4 =
 FP.server.local.ip6 =
 FP.server.public.ip6 =
-
-#指定机器所属平台,目前仅有aws,qingcloud, 默认aws
-FP.server.host.platform = 
 
 #----------------#
 # TCPEpollServer #

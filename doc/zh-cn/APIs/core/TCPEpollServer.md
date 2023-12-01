@@ -77,7 +77,8 @@ TCP 服务器，基于 Epoll 实现。
 		virtual std::string workerPoolStatus();
 		virtual std::string answerCallbackPoolStatus();
 		inline bool encrpytionEnabled();
-		inline bool enableEncryptor(const std::string& curve, const std::string& privateKey);
+		inline bool addEncryptionKey(const std::string& curve, const std::string& privateKey, const std::string& keyId);
+		inline bool reloadEncryptionKeysList();
 		static void enableForceEncryption();
 
 		inline bool ipWhiteListEnabled();
@@ -402,11 +403,11 @@ TCP 服务器，基于 Epoll 实现。
 
 判断 TCP 服务器是否启动了加密。
 
-#### enableEncryptor
+#### addEncryptionKey
 
-	inline bool enableEncryptor(const std::string& curve, const std::string& privateKey);
+	inline bool addEncryptionKey(const std::string& curve, const std::string& privateKey, const std::string& keyId);
 
-启用链接加密。
+添加加密密钥，并启用链接加密功能。
 
 **参数说明**
 
@@ -428,6 +429,16 @@ TCP 服务器，基于 Epoll 实现。
 	**注意**
 
 	该私钥为裸密钥，由 FPNN 框架内置工具 [eccKeyMaker](../../fpnn-tools.md#eccKeyMaker) 生成。
+
+* **`const std::string& keyId`**
+
+	密钥 ID。用于建立连接时，指定特定的密钥。如果为 空字符串， 则为默认密钥。
+
+#### reloadEncryptionKeysList
+
+	inline bool reloadEncryptionKeysList();
+
+更新/重新加载加密密钥。
 
 #### enableForceEncryption
 

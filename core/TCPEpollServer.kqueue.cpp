@@ -118,12 +118,13 @@ bool TCPEpollServer::initServerVaribles(){
 	if (_duplexThreadMin > _duplexThreadMax) _duplexThreadMin = _duplexThreadMax;
 
 	//-- ECC-AES encryption
-	_encryptEnabled = Setting::getBool(std::vector<std::string>{
+	bool encryptEnabled = Setting::getBool(std::vector<std::string>{
 		"FPNN.server.tcp.security.ecdh.enable",
 		"FPNN.server.security.ecdh.enable"}, false);
-	if (_encryptEnabled)
+	if (encryptEnabled)
 	{
-		if (_keyExchanger.init("tcp") == false)
+		_keysManager = ServerECCKeyManager::init("tcp");
+		if (_keysManager == nullptr)
 		{
 			throw FPNN_ERROR_CODE_FMT(FpnnCoreError, FPNN_EC_CORE_UNKNOWN_ERROR, "Auto config ECC-AES for TCP server failed.");
 		}

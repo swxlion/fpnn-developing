@@ -11,7 +11,7 @@
 #endif
 #include "msec.h"
 #include "../Encryptor.h"
-#include "../KeyExchange.h"
+#include "../ServerECCKeyManager.h"
 
 namespace fpnn
 {
@@ -111,8 +111,9 @@ namespace fpnn
 			EncryptorPair(): sender(NULL), receiver(NULL) {}
 		};
 
-		static struct EncryptorPair createPair(ECCKeyExchange* keyExchanger, const std::string& publicKey, bool reinforce);
-		static struct EncryptorPair createPair(ECCKeyExchange* keyExchanger, const std::string& packagePublicKey,
+		//-- TODO: keyId need update for UDP.v3.
+		static struct EncryptorPair createPair(ServerECCKeyManagerPtr keysManager, const std::string& keyId, const std::string& publicKey, bool reinforce);
+		static struct EncryptorPair createPair(ServerECCKeyManagerPtr keysManager, const std::string& packagePublicKey,
 			bool reinforcePackage, const std::string& dataPublicKey, bool reinforceData);
 
 		UDPEncryptor(): _packageEncryptor(NULL), _dataEncryptor(NULL) {}

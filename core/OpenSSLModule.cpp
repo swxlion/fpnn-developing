@@ -133,9 +133,14 @@ std::list<std::string> OpenSSLModule::getLastErrors()
 	char* buffer = (char*)malloc(bufferLen);
 	while (true)
 	{
-		const char *file, *data;
+		const char *file, *func, *data;
 		int line, flags;
+
+#if OPENSSL_VERSION_NUMBER >= OPENSSL_VERSION_3_0_0
+		unsigned long errorCode = ERR_get_error_all(&file, &line, &func, &data, &flags);
+#else
 		unsigned long errorCode = ERR_get_error_line_data(&file, &line, &data, &flags);
+#endif
 		if (errorCode == 0)
 		{
 			free(buffer);

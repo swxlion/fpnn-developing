@@ -64,8 +64,6 @@ MacOS 平台编译，无需 tcmalloc 库。
 		* 安装 XCode
 		* 安装 openssl
 
-				brew install openssl@1.1
-
 
 ## 3. 平台适配
 

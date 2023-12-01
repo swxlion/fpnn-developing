@@ -43,7 +43,6 @@ static std::string GCP_BASE_HOST = "http://metadata/computeMetadata/v1/instance/
 static std::string AZURE_BASE_HOST = "http://169.254.169.254/metadata/instance?api-version=2018-02-01";
 static std::string TENCENT_BASE_HOST = "http://metadata.tencentyun.com/latest/meta-data";
 static std::string ALIYUN_BASE_HOST = "http://100.100.100.200/latest/meta-data";
-static std::string HOST_PLATFORM = "FP.server.host.platform";
 
 const std::string& ServerInfo::getServerHostName(){
 	while(_serverHostName.empty()){

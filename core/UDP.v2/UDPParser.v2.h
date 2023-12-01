@@ -89,12 +89,12 @@ namespace fpnn
 		bool receivedPriorSeqs;
 		bool requireForceSync;
 
-		ECCKeyExchange* keyExchanger;
+		ServerECCKeyManagerPtr keysManager;
 		UDPEncryptor* sendingEncryptor;
 		bool enableDataEncryption;
 
 		ParseResult(): canbeFeedbackUNA(false), receivedPriorSeqs(false), requireForceSync(false),
-			keyExchanger(NULL), sendingEncryptor(NULL), enableDataEncryption(false)
+			sendingEncryptor(NULL), enableDataEncryption(false)
 		{
 			protocolVersion = ARQConstant::Version;
 		}

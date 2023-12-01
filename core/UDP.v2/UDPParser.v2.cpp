@@ -897,6 +897,7 @@ bool ARQParser::parseForceSync()
 	return true;
 }
 
+//-- TODO: keyId need update for UDP.v3.
 bool ARQParser::parseECDH()
 {
 	uint16_t bytes = 0;
@@ -917,7 +918,7 @@ bool ARQParser::parseECDH()
 
 	//----- Config Checking ------//
 
-	if (_parseResult->keyExchanger == NULL)
+	if (_parseResult->keysManager == nullptr)
 	{
 		LOG_ERROR("Received UDP ECDH package, but key exchanger is NOT configurated. Package len: %d, "
 			"included %d bytes ECDH data. Socket: %d, endpoint: %s",
@@ -972,7 +973,7 @@ bool ARQParser::parseECDH()
 		std::string dataPublicKey((char*)pos, pubKeyLen);
 		pos += pubKeyLen;
 
-		encryptors = UDPEncryptor::createPair(_parseResult->keyExchanger, packagePublicKey,
+		encryptors = UDPEncryptor::createPair(_parseResult->keysManager, packagePublicKey,
 			reinforcePackage, dataPublicKey, reinforceData);
 
 		_unorderedParse = false;
@@ -984,7 +985,9 @@ bool ARQParser::parseECDH()
 	}
 	else
 	{
-		encryptors = UDPEncryptor::createPair(_parseResult->keyExchanger, packagePublicKey, reinforcePackage);
+		//-- TODO: keyId need update for UDP.v3.
+		std::string keyId = "";
+		encryptors = UDPEncryptor::createPair(_parseResult->keysManager, keyId, packagePublicKey, reinforcePackage);
 	}
 
 	//----- 04. Process encryptors ------//

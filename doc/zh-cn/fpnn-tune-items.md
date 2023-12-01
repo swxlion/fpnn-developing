@@ -5,6 +5,7 @@
 | server.security.ip.whiteList.enable | 启用或者禁用白名单 | true、false  | TCP 和 UDP 服务器相互独立，不存在白名单联动 |
 | server.security.ip.whiteList.addIP | 向白名单添加 IP 地址 | IP v4 & IP v6 地址 | TCP 和 UDP 服务器相互独立，不存在白名单联动 |
 | server.security.ip.whiteList.removeIP | 从白名单中移除 IP 地址 | IP v4 & IP v6 地址 | TCP 和 UDP 服务器相互独立，不存在白名单联动 |
+| server.security.ecdh.keysList.reload | 更新/重新加载加密密钥清单 | 无 | 忽略所有 value 参数 |
 | server.core.size | 进程崩溃时，core 大小限制 | 以字节为单位的整数 |  |
 | server.no.file | 进程可用文件描述符数量修改 | 整数值 |  |
 | server.log.level | 进程日志级别 | DEBUG、INFO、WARN、ERROR、FATAL |  |

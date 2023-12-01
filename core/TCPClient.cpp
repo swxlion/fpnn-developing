@@ -23,7 +23,7 @@ TCPClient::TCPClient(const std::string& host, int port, bool autoReconnect):
 		keepAlive();
 }
 
-bool TCPClient::enableEncryptorByDerData(const std::string &derData, bool packageMode, bool reinforce)
+bool TCPClient::enableEncryptorByDerData(const std::string &derData, bool packageMode, bool reinforce, const std::string& keyId)
 {
 	EccKeyReader reader;
 
@@ -31,10 +31,10 @@ bool TCPClient::enableEncryptorByDerData(const std::string &derData, bool packag
 	if (derSAX.parse(derData, &reader) == false)
 		return false;
 
-	enableEncryptor(reader.curveName(), reader.rawPublicKey(), packageMode, reinforce);
+	enableEncryptor(reader.curveName(), reader.rawPublicKey(), packageMode, reinforce, keyId);
 	return true;
 }
-bool TCPClient::enableEncryptorByPemData(const std::string &PemData, bool packageMode, bool reinforce)
+bool TCPClient::enableEncryptorByPemData(const std::string &PemData, bool packageMode, bool reinforce, const std::string& keyId)
 {
 	EccKeyReader reader;
 
@@ -42,24 +42,24 @@ bool TCPClient::enableEncryptorByPemData(const std::string &PemData, bool packag
 	if (pemSAX.parse(PemData, &reader) == false)
 		return false;
 
-	enableEncryptor(reader.curveName(), reader.rawPublicKey(), packageMode, reinforce);
+	enableEncryptor(reader.curveName(), reader.rawPublicKey(), packageMode, reinforce, keyId);
 	return true;
 }
-bool TCPClient::enableEncryptorByDerFile(const char *derFilePath, bool packageMode, bool reinforce)
+bool TCPClient::enableEncryptorByDerFile(const char *derFilePath, bool packageMode, bool reinforce, const std::string& keyId)
 {
 	std::string content;
 	if (FileSystemUtil::readFileContent(derFilePath, content) == false)
 		return false;
 	
-	return enableEncryptorByDerData(content, packageMode, reinforce);
+	return enableEncryptorByDerData(content, packageMode, reinforce, keyId);
 }
-bool TCPClient::enableEncryptorByPemFile(const char *pemFilePath, bool packageMode, bool reinforce)
+bool TCPClient::enableEncryptorByPemFile(const char *pemFilePath, bool packageMode, bool reinforce, const std::string& keyId)
 {
 	std::string content;
 	if (FileSystemUtil::readFileContent(pemFilePath, content) == false)
 		return false;
 
-	return enableEncryptorByPemData(content, packageMode, reinforce);
+	return enableEncryptorByPemData(content, packageMode, reinforce, keyId);
 }
 
 bool TCPClient::enableSSL(bool enable)
@@ -466,10 +466,14 @@ bool TCPClient::connect()
 	{
 		uint64_t token = newConnInfo->token;
 
-		FPQWriter qw(3, "*key");
+		FPQWriter qw(_encryptionKeyId.empty() ? 3 : 4, "*key");
 		qw.param("publicKey", publicKey);
 		qw.param("streamMode", !_packageEncryptionMode);
-		qw.param("bits", _AESKeyLen * 8); 
+		qw.param("bits", _AESKeyLen * 8);
+
+		if (_encryptionKeyId.empty() == false)
+			qw.param("keyId", _encryptionKeyId); 
+
 		FPQuestPtr quest = qw.take();
 
 		Config::ClientQuestLog(quest, newConnInfo->ip, newConnInfo->port);
